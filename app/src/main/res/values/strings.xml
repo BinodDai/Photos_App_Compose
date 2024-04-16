@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Photos App</string>
+    <string name="select_first_image">Select First Image</string>
+    <string name="select_second_image">Select Second Image</string>
+    <string name="proceed">Proceed</string>
+    <string name="choose_images">Choose Images</string>
+    <string name="generate_images">Generate Images</string>
+    <string name="indexed">Indexed</string>
+    <string name="enter_size">Enter Size</string>
+</resources>
