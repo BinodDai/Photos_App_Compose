@@ -7,13 +7,11 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,41 +49,52 @@ fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
 
         Box(modifier = Modifier.padding(paddingValue)) {
 
-            Column(
-                modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center
             ) {
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(items = images)
-                    { item ->
-                        ImageItem(item)
+                items(items = images)
+                { item ->
+                    ImageItem(item)
+                }
+
+                item {
+                    TextField(
+                        value = textFieldValue,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        onValueChange = { textFieldValue = it },
+                        visualTransformation = VisualTransformation.None,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        label = { Text(stringResource(id = R.string.enter_size) + " (Default Size is 50)") }
+                    )
+                }
+
+                item {
+                    CustomButton(label = R.string.choose_images, onClick = {
+                        multiplePhotoLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    })
+                }
+
+                item {
+
+                    if (images.isNotEmpty()) {
+                        CustomButton(label = R.string.generate_images, onClick = {
+                            val count = textFieldValue.toIntOrNull() ?: 50
+                            viewModel.updateTextFieldValue(count)
+                            viewModel.generateTriangularNumbers(count)
+                            navController.navigate("detail")
+                        })
                     }
                 }
 
-                TextField(
-                    value = textFieldValue,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    onValueChange = { textFieldValue = it },
-                    visualTransformation = VisualTransformation.None,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    label = { Text(stringResource(id = R.string.enter_size) + " (Default Size is 50)") }
-                )
 
-                CustomButton(label = R.string.choose_images, onClick = {
-                    multiplePhotoLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                })
-
-                if (images.isNotEmpty()) {
-                    CustomButton(label = R.string.generate_images, onClick = {
-                        val count = textFieldValue.toIntOrNull() ?: 50
-                        viewModel.updateTextFieldValue(count)
-                        viewModel.generateTriangularNumbers(count)
-                        navController.navigate("detail")
-                    })
-                }
             }
-
         }
     }
 
